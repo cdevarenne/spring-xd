@@ -1,0 +1,27 @@
+CSV to HDFS
+
+Verify that HDFS append is set to true in hdfs-site.xml, if not enable it. Note: it is often already enabled for components like HBase or HAWQ
+
+    <property>
+        <name>dfs.support.append</name>
+        <value>true</value>
+    </property>
+    
+bash:
+   cd /tmp
+   
+   mkdir temperatures
+   
+   create /tmp/temperatures/week1.txt
+   22,22,23
+   
+   create /tmp/temperatures/week2.txt
+   19,20,19
+   
+   create /tmp/temperatures/week3.txt
+   21,21,22
+
+xd-shell: 
+job create temperaturesJob --definition "filepollhdfs --names=temp0,temp1,temp2" --deploy
+
+stream create csvtohdfs --definition "file --ref=true --dir=/tmp/temperatures --pattern=*.txt > queue:job:temperaturesJob" --deploy
