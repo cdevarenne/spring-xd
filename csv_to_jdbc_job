@@ -1,0 +1,26 @@
+Job to import CSV to JDBC
+
+psql:
+   create table temperatures (temp0 varchar(20),temp1 varchar(20),temp2 varchar(20));
+
+bash:
+   cd /tmp
+   
+   mkdir temperatures
+   
+   create /tmp/temperatures/week1.txt
+   22,22,23
+   
+   create /tmp/temperatures/week2.txt
+   19,20,19
+   
+   create /tmp/temperatures/week3.txt
+   21,21,22
+
+xd-shell:
+job create loadtemps --definition "filejdbc --resources=file:///tmp/temperatures/*.txt --names=temp0,temp1,temp2 --tableName=temperatures --initializeDatabase=false --url=jdbc:postgresql:gpadmin --driverClassName=org.postgresql.Driver --username=gpadmin --password=''" --deploy
+
+job launch loadtemps
+
+psql:
+select * from temperatures;
