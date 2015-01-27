@@ -1,0 +1,28 @@
+shell create/edit $XD_BASE/xd/config/jdbc.properties:
+   
+   url = jdbc:postgresql:gpadmin
+   driverClassName = org.postgresql.Driver
+   username = gpadmin
+   password =
+  
+shell:  
+   cd /tmp/xd/input
+   touch filetest
+
+psql:
+  create table filetest (id int, name varchar(20));
+
+shell create  ~/testfile (no empty line at the end of the file):
+{"id":1,"name":"dubois"}
+{"id":2,"name":"duchene"}
+{"id":3,"name":"dupont"}
+{"id":4,"name":"durand"}
+
+xd-shell:
+stream create --name filetest --definition "tail --name=/tmp/xd/input/filetest |  jdbc --columns=id,name" --deploy
+
+shell:
+cp ~/testfile /tmp/xd/input/filetest
+
+psql:
+select * from filetest;
